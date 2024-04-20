@@ -8,7 +8,7 @@ function Guess({ guessList }) {
       {range(NUM_OF_GUESSES_ALLOWED).map((num) => (
         <p className="guess" key={num}>
           {range(5).map((col) => (
-            <span className="cell">
+            <span className="cell" key={col}>
               {guessList[num] && guessList[num].value[col]}
             </span>
           ))}
