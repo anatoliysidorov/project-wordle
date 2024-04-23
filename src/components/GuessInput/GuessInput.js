@@ -1,6 +1,6 @@
 import React from "react";
 
-function GuessInput({ handleGuess, answer }) {
+function GuessInput({ handleGuess, answered, gameOver }) {
   const [tentativeGuess, setTentativeGuess] = React.useState("");
 
   const regEx = "[a-zA-Z]*";
@@ -11,7 +11,6 @@ function GuessInput({ handleGuess, answer }) {
     if (val.length === 5) {
       handleGuess(tentativeGuess);
       setTentativeGuess("");
-      if (val === answer) event.target[0].disabled = true;
     }
   }
 
@@ -22,6 +21,7 @@ function GuessInput({ handleGuess, answer }) {
         id="guess-input"
         type="text"
         required
+        disabled={answered || gameOver}
         maxLength={5}
         minLength={5}
         pattern="[a-zA-Z]*"
