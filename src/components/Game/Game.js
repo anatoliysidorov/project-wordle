@@ -5,14 +5,14 @@ import { WORDS } from "../../data";
 
 import GuessInput from "../GuessInput";
 import GuessList from "../GuessList";
-import Guess from "../Guess";
-import Banner from "../Banner/Banner";
+import { NUM_OF_GUESSES_ALLOWED } from "../../constants";
+import WonBanner from "../WonBanner/WonBanner";
+import LostBanner from "../LostBanner/LostBanner";
 
 function Game() {
   const [guessList, setGuessList] = React.useState([]);
   const [answer, setAnswer] = React.useState(sample(WORDS));
-  const [gameOver, setGameOver] = React.useState(false);
-  const [answered, setAnswered] = React.useState(false);
+  const [gameStatus, setGameStatus] = React.useState("running");
 
   console.info({ answer });
 
@@ -21,34 +21,34 @@ function Game() {
       value: tentativeGuess,
       id: `${tentativeGuess}-${Math.random()}`,
     };
-    setGuessList([...guessList, guess]);
-    setGameOver(guessList.length === 5 && guess.value !== answer);
-    setAnswered(guess.value === answer);
+    const guesses = [...guessList, guess];
+
+    setGuessList(guesses);
+
+    if (guess.value === answer) {
+      setGameStatus("won");
+    } else if (guesses.length === NUM_OF_GUESSES_ALLOWED) {
+      setGameStatus("lost");
+    }
   }
 
   function resetGame() {
     setAnswer(sample(WORDS));
     setGuessList([]);
-    setGameOver(false);
-    setAnswered(false);
+    setGameStatus("running");
   }
 
   return (
     <>
-      <Guess guessList={guessList} answer={answer} />
-      <GuessList guessList={guessList} />
-      <GuessInput
-        handleGuess={handleGuess}
-        answered={answered}
-        isGameOver={gameOver}
-      />
-      <Banner
-        guessList={guessList}
-        answer={answer}
-        answered={answered}
-        isGameOver={gameOver}
-        resetGame={resetGame}
-      />
+      {gameStatus !== "running" && (
+        <button className="button-10" onClick={resetGame}>
+          Reset Game
+        </button>
+      )}
+      <GuessList guessList={guessList} answer={answer} />
+      <GuessInput handleGuess={handleGuess} gameStatus={gameStatus} />
+      {gameStatus === "won" && <WonBanner numOfGuesses={guessList.length} />}
+      {gameStatus === "lost" && <LostBanner answer={answer} />}
     </>
   );
 }
